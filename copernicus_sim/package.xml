@@ -12,6 +12,19 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_ros_pkgs</depend>
+  
+
+  <exec_depend>robot_localization</exec_depend>
+  <exec_depend>rviz_mbf_plugins</exec_depend>
+  <exec_depend>rviz_mesh_tools_plugins</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

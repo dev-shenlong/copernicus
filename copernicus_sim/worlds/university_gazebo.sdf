@@ -49,7 +49,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/shenlong/_ws/AIRL_IISc/ros2_ws/src/copernicus_sim/models/custom_world/meshes/university.obj</uri>
+              <uri>model://custom_world/meshes/university.obj</uri>
             </mesh>
           </geometry>
           <max_contacts>10</max_contacts>
@@ -70,7 +70,7 @@
           <geometry>
             <mesh>
               <scale>1 1 1</scale>
-              <uri>/home/shenlong/_ws/AIRL_IISc/ros2_ws/src/copernicus_sim/models/custom_world/meshes/university.obj</uri>
+              <uri>models://custom_world/meshes/university.obj</uri>
             </mesh>
           </geometry>
         </visual>

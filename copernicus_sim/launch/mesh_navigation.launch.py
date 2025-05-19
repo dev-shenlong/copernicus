@@ -12,26 +12,40 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    pkg_name = "copernicus_sim"
     pkg_share = get_package_share_directory("copernicus_sim")
+
+    #Extension of the mesh map files
     mesh_map_nav_ext = ".ply"
+
+    # Get thhe Available maps
     available_map_names = [
         f[:-len(mesh_map_nav_ext)]
         for f in os.listdir(os.path.join(pkg_share, "maps"))
         if f.endswith(mesh_map_nav_ext)
     ]
 
-    map_name_default = "botanical_garden"#""university"#
+    map_name_default = "botanical_garden"
     # Launch arguments
     map_name = LaunchConfiguration("map_name")
     #world_name = LaunchConfiguration("world_name")
     localization_type = LaunchConfiguration("localization_type")
+    use_rviz = LaunchConfiguration("use_rviz")
 
+    # Launch the simulation of the robot in Gazebo
     simulation_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [PathJoinSubstitution([pkg_share, "launch", "robot_sim.launch.py"])]
         ),
+        launch_arguments={
+            "world_file": PythonExpression(['"', map_name, ".sdf", '"']),
+            "use_rviz": "false",
+            "use_sim_time": "true",
+        }.items(),
 
     )
+
+    #Ekf node the configuration is still under development
     ekf = Node(
         package="robot_localization",
         executable="ekf_node",
@@ -41,23 +55,7 @@ def generate_launch_description():
             {'use_sim_time': True},
             PathJoinSubstitution([pkg_share, "config", "ekf.yaml"])],
     )
-    # Ground truth map localization
-    map_loc_gt = Node(
-        package="mesh_navigation_tutorials_sim",
-        executable="ground_truth_localization_node",
-        name="ground_truth_localization_node",
-        output="screen",
-        parameters=[
-            {
-                "use_sim_time": True,
-                "gz_parent_frame": map_name,
-                "gz_child_frame": "copernicus",
-                "ros_parent_frame": "map",
-                "ros_child_frame": "base_link",
-                "ros_odom_frame": "odom",
-            }
-        ],
-    )
+    
     #Ground truth map localization
     map_tf = Node(
             package='tf2_ros',
@@ -93,6 +91,7 @@ def generate_launch_description():
         ],
     )
 
+    #Launch the move_base_flex navigation stack
     move_base_flex = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             PathJoinSubstitution(
@@ -117,41 +116,38 @@ def generate_launch_description():
             )
         }.items(),
     )
+    #Launch the Rviz visualization tool
     rviz = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen",
+            package="rviz2", 
+            executable="rviz2",
+            name="rviz2",
+            output="screen",
+            arguments=['-d', os.path.join(get_package_share_directory(pkg_name), 'rviz', 'default.rviz')]
+            ,
+            condition=IfCondition(use_rviz)
 
     )
 
+
     return LaunchDescription(
         [
-            # DeclareLaunchArgument(
-            #     "map_name",
-            #     description="Name of the map to be used for navigation"
-            #     + '(see copernicus_sim\' "maps" directory).',
-            #     default_value=LaunchConfiguration("world_name"),
-            #     choices=available_map_names,
-            # ),
-            DeclareLaunchArgument(
-                "localization_type",
-                description="How the robot shall localize itself",
-                default_value="ground_truth",
-                choices=["ground_truth", "ekf"],
-            ),
             DeclareLaunchArgument(
                 "map_name",
                 description="Name of the map to be used for navigation"
                 + '(see copernicus_sim\' "maps" directory).',
                 default_value=map_name_default,
+                choices=available_map_names,
             ),
+            DeclareLaunchArgument(
+                "use_rviz",
+                default_value="true",
+                description="Use rviz if true",
+            ),
+            rviz,
             simulation_launch,
             #ekf,
             map_tf,
             move_base_flex,
-            #rviz,
-            #map_loc_gt
-            #map_loc_rmcl_micp
+            
         ]
     )

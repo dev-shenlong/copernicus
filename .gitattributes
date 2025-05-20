@@ -1,0 +1,4 @@
+copernicus_sim/models/landscape/meshes/landscape.dae filter=lfs diff=lfs merge=lfs -text
+copernicus_sim/models/flat/meshes/flat.dae filter=lfs diff=lfs merge=lfs -text
+copernicus_sim/maps/flat.dae filter=lfs diff=lfs merge=lfs -text
+copernicus_sim/maps/landscape.dae filter=lfs diff=lfs merge=lfs -text

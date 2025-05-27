@@ -1,0 +1,54 @@
+micp_localization:
+  ros__parameters:
+    use_sim_time: True
+
+    # required frames
+    base_frame: base_link
+    map_frame: map
+    odom_frame: odom
+
+    # maximum number of correction steps per second
+    # lower this to decrease the correction speed but save energy 
+    disable_correction: False
+    correction_rate_max: 20.0
+    optimization_iterations: 5
+    tf_time_source: 1 # 0: measurement_latest, 1: correction_latest
+    tf_rate: 100.0
+    broadcast_tf: True
+    publish_pose: True
+    pose_noise: 0.01 # minimum noise of pose. can be set from sensor noise
+
+    # adjust max distance dependent of the state of localization
+    adaptive_max_dist: True # enable adaptive max dist
+
+    # initial pose changes
+    initial_pose_offset: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] # translation + euler angles (6) or translation + quaternion (7)
+
+    # describe your sensor setup here
+    sensors: # list of range sensors - at least one is required
+      lidar3d:
+        data_source: topic
+        model_type: o1dn
+        topic_name: /o1dn/pointcloud
+        correspondences:
+          backend: embree
+          type: RC
+          metric: P2L
+          adaptive_max_dist_min: 0.5
+          max_dist: 2.0
+          visualize: True
+
+pc2_to_o1dn:
+  ros__parameters:
+    debug_cloud: True
+    model:
+      range_min: 0.9
+      range_max: 100.0
+    width:
+      skip_begin: 0
+      skip_end: 0
+      increment: 1
+    height:
+      skip_begin: 0
+      skip_end: 0
+      increment: 1

@@ -69,40 +69,19 @@
                     <publish_odom>true</publish_odom>
                     <publish_odom_tf>true</publish_odom_tf>
                     <publish_wheel_tf>true</publish_wheel_tf>
-                    <odometrySource>0</odometrySource>
-                    <odom_noise>
-                        <pose>
-                            <x>0.01</x>
-                            <y>0.01</y>
-                            <z>0.0</z>
-                            <roll>0.0</roll>
-                            <pitch>0.0</pitch>
-                            <yaw>0.02</yaw>
-                        </pose>
-                        <twist>
-                            <linear>
-                            <x>0.01</x>
-                            <y>0.01</y>
-                            <z>0.0</z>
-                            </linear>
-                            <angular>
-                            <x>0.0</x>
-                            <y>0.0</y>
-                            <z>0.02</z>
-                            </angular>
-                        </twist>
-                        </odom_noise>
+                    <odometry_source>1</odometry_source>
+                    
                 </plugin>
-                <plugin name="ground_truth_publisher" filename="libgazebo_ros_p3d.so">
+                <!-- <plugin name="ground_truth_publisher" filename="libgazebo_ros_p3d.so">
                     <update_rate>50</update_rate>
-                    <!-- Check model name -> might have to be unique for every bot -->
+
                     <odom_topic>odom</odom_topic>
                     <frame_name>map</frame_name>
                     <body_name>base_link</body_name>
                     <update_rate>50</update_rate>
                     <xyz_offsets>0 0 0</xyz_offsets>
                     <rpy_offsets>0 0 0</rpy_offsets>
-                </plugin>
+                </plugin> -->
 
             </xacro:if>
 

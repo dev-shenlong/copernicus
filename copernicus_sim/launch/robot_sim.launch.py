@@ -7,7 +7,7 @@ from launch.actions import IncludeLaunchDescription,RegisterEventHandler, Declar
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution,PythonExpression
 from launch.conditions import IfCondition
 
 from launch.actions import SetEnvironmentVariable,AppendEnvironmentVariable
@@ -22,7 +22,9 @@ def generate_launch_description():
     default_world_file_name = "botanical_garden.sdf"
     world_file_name = LaunchConfiguration('world_file')
     use_rviz = LaunchConfiguration('use_rviz')
+    sim_type = LaunchConfiguration("sim_type")
     # Get the path to the world file
+
     
     world_path = PathJoinSubstitution([
         get_package_share_directory(description_package),
@@ -54,16 +56,35 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('gazebo_ros'), 'launch', 'gazebo.launch.py')
         ]),
-        launch_arguments={'world': world_path}.items()
+        launch_arguments={'world': world_path}.items(),
+        condition =IfCondition(PythonExpression(["'", sim_type, "'", " == ", "'gazebo'"]))
     )
 
     # Spawn the robot entity in Gazebo
     spawn_entity = Node(package='gazebo_ros',
                         executable='spawn_entity.py',
-                        arguments=['-topic', 'robot_description', '-entity', 'copernicus','-timeout', '600.0'], #Test if the entity name is changed,
-                        output="screen"
+                        arguments=['-topic', 'robot_description', '-entity', 'diadem','-timeout', '600.0'], #Test if the entity name is changed,
+                        output="screen",
+                        condition =IfCondition(PythonExpression(["'", sim_type, "'", " == ", "'gazebo'"]))
+        
 
     )
+
+    gz = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
+        ]),
+        launch_arguments={'gz_args:':['-r -v4 ', world_path ]}.items(),
+        condition =IfCondition(PythonExpression(["'", sim_type, "'", " == ", "'gz_sim'"]))
+    )
+
+    gz_spawn_entity = Node(package='ros_gz_sim', executable='create',
+                        arguments=['-topic', 'robot_description',
+                                   '-name', 'copernicus',
+                                   '-z', '0.1'],
+                        output='screen',
+                        condition =IfCondition(PythonExpression(["'", sim_type, "'", " == ", "'gz_sim'"]))
+                )
 
     return LaunchDescription([
         # Set the environment variable for Gazebo model path
@@ -75,9 +96,12 @@ def generate_launch_description():
         # World file name must be present in the worlds directory
         DeclareLaunchArgument("world_file", default_value=default_world_file_name, description="Declare the name of the world file"),
         DeclareLaunchArgument("use_rviz", default_value="true", description="Use rviz if true"),
+        DeclareLaunchArgument("sim_type", default_value="gz_sim", description= "Simulator to use"),
         rsp,
         rviz,
         gazebo,
         spawn_entity,
+        gz,
+        gz_spawn_entity
          ]
     )

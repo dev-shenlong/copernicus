@@ -29,7 +29,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <robot name="copernicus" xmlns:xacro="https://ros.org/wiki/xacro">
-    <xacro:macro name="imu" params="frame:=imu topic:=imu/data update_rate:=20 robot_namespace:=/">
+    <xacro:macro name="imu" params="frame:=imu topic:=imu/data update_rate:=20 robot_namespace:=/ sim_type:=gazebo">
         <joint name="${frame}_joint" type="fixed">
             <parent link="base_link" />
             <child link="${frame}" />
@@ -43,25 +43,41 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                 <inertia ixx="1e-09" ixy="0.0" ixz="0.0" iyy="1e-09" iyz="0.0" izz="1e-09"/>
             </inertial>
         </link>
-
-        <gazebo reference="${frame}">
-            <gravity>true</gravity>
-            <sensor name="imu_sensor" type="imu">
-                <always_on>true</always_on>
-                <update_rate>100</update_rate>
-                <visualize>true</visualize>
-                <topic>${topic}</topic>
-                <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
-                    <topicName>${topic}</topicName>
-                    <bodyName>${frame}</bodyName>
-                    <updateRateHZ>${update_rate}</updateRateHZ>
-                    <gaussianNoise>0.0</gaussianNoise>
-                    <xyzOffset>0 0 0</xyzOffset>
-                    <rpyOffset>0 0 0</rpyOffset>
-                    <frameName>base_link</frameName>
-                </plugin>
-                <pose>0 0 0 0 0 0</pose>
-            </sensor>
-        </gazebo>
+        <xacro:if value="$(eval sim_type=='gazebo')"/>
+            <gazebo reference="${frame}">
+                <gravity>true</gravity>
+                <sensor name="imu_sensor" type="imu">
+                    <always_on>true</always_on>
+                    <update_rate>100</update_rate>
+                    <visualize>true</visualize>
+                    <topic>${topic}</topic>
+                    <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+                        <topicName>${topic}</topicName>
+                        <bodyName>${frame}</bodyName>
+                        <updateRateHZ>${update_rate}</updateRateHZ>
+                        <gaussianNoise>0.0</gaussianNoise>
+                        <xyzOffset>0 0 0</xyzOffset>
+                        <rpyOffset>0 0 0</rpyOffset>
+                        <frameName>base_link</frameName>
+                    </plugin>
+                    <pose>0 0 0 0 0 0</pose>
+                </sensor>
+            </gazebo>
+        </xacro:if>
+        <xacro:if value="$(eval sim_type=='gz_sim')"/>
+            <gazebo reference="${frame}">
+                <gravity>true</gravity>
+                <sensor name="imu_sensor" type="imu">
+                    <always_on>true</always_on>
+                    <update_rate>100</update_rate>
+                    <visualize>true</visualize>
+                    <topic>${topic}</topic>
+                    <imu>
+                        <!-- add noise and other parameters if required -->
+                    </imu>
+                    <pose>0 0 0 0 0 0</pose>
+                </sensor>
+            </gazebo>
+        </xacro:if>
     </xacro:macro>
 </robot>

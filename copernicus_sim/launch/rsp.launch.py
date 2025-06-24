@@ -19,7 +19,7 @@ def generate_launch_description():
     # Process the URDF file
     pkg_path = os.path.join(get_package_share_directory('copernicus_sim'))
     # Get the path to the URDF file
-    xacro_file = os.path.join(pkg_path,'urdf','copernicus.xacro')
+    xacro_file = os.path.join(pkg_path,'urdf','diadem.xacro')
     robot_description_config = xacro.process_file(xacro_file, mapping={'sim_type': sim_type})
     
     # Create a robot_state_publisher node

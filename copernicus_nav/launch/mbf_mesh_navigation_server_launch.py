@@ -64,7 +64,7 @@ def generate_launch_description():
         package="mbf_mesh_nav",
         executable="mbf_mesh_nav",
         remappings=[
-            ("/move_base_flex/cmd_vel", "/cmd_vel_stamped"),
+            ("/move_base_flex/cmd_vel", "/cmd_vel"),
         ],
         parameters=[
             mbf_mesh_nav_config,
@@ -87,6 +87,6 @@ def generate_launch_description():
         launch_args
         + [
             mesh_nav_server,
-            mesh_stamped2unstamped
+           # mesh_stamped2unstamped
         ]
     )

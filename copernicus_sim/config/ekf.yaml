@@ -1,20 +1,20 @@
 ekf_filter_node:
   ros__parameters:
-    frequency: 50.0
+    frequency: 100.0
     two_d_mode: true
 
     debug: false
 
     map_frame: map              # Defaults to "map" if unspecified
     odom_frame: odom            # Defaults to "odom" if unspecified
-    base_link_frame: base_footprint  # Defaults to "base_link" if unspecified
+    base_link_frame: base_link  # Defaults to "base_link" if unspecified
     world_frame: odom           # Defaults to the value of odom_frame if unspecified
 
     odom0: /odom
-    odom0_config: [false, false, false, #xyz
-                    false, false, false, # rpy
-                    true, false, false, #vxyz
-                    false, false, true, #vrpy
+    odom0_config: [true, true, true, #xyz
+                    false, false, true, # rpy
+                    true, true, true, #vxyz
+                    false, false, false, #vrpy
                     false, false, false] #axyz 
 
     odom0_differential: false
@@ -22,7 +22,7 @@ ekf_filter_node:
 
     imu0: /imu_plugin/out
     imu0_config: [false,  false,  false, #xyz
-                    false, false, false, # rpy
+                    true, true, true, # rpy
                     false, false, false, #vxyz
                     true, true, true, #vrpy
                     false, false, false] #axyz 

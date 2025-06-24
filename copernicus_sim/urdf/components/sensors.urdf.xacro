@@ -1,7 +1,7 @@
 <!-- IMU -->
 
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-        <xacro:if value="$(eval sim_type == 'gazebo')">
+        
             <xacro:if value="$(arg imu_enabled)">
                 <xacro:include filename="$(find copernicus_sim)/urdf/accessories/imu_copernicus.urdf.xacro"/>
                 <xacro:imu robot_namespace="$(arg robot_namespace)"></xacro:imu>
@@ -38,18 +38,7 @@
         </xacro:if>
         <!-- Add frames for each of these sensors to work in gz_sim -->
         <xacro:if value="$(eval sim_type == 'gz_sim')">
-            <!-- <gazebo reference="imu" >
-                <sensor name="imu" type="imu">
-                <always_on>1</always_on>
-                <update_rate>100</update_rate>
-                <visualize>false</visualize>
-                <topic>/model/robot/imu</topic>
-                <frame_id>imu</frame_id>
-                <gz_frame_id>imu</gz_frame_id>
-                <ign_frame_id>imu</ign_frame_id>
-                </sensor>
-            </gazebo> -->
-
+           
             <!-- <gazebo reference="laser2d">
                 <sensor name="laser2d" type='gpu_lidar'>"
                 <pose relative_to='laser2d'>0 0 0 0 0 0</pose>

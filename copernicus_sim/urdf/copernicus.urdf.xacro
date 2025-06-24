@@ -39,14 +39,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <!-- xacro args -->
     <xacro:arg name="robot_namespace" default="/" />
     <xacro:arg name="lidar_enabled" default="false"/>
-    <xacro:arg name="test_lidar_enabled" default="false"/>
-    <xacro:arg name="sick_lms151_enabled" default="false"/>
+    <xacro:arg name="test_lidar_enabled" default="true"/>
+    <xacro:arg name="sick_lms151_enabled" default="true"/>
     <xacro:arg name="velodyne_enabled" default="true"/>
     <xacro:arg name="imu_enabled" default="true"/>
-    <!--<xacro:arg name="camera_enabled" default="false"/>
-    <xacro:arg name="intel_d435i_enabled" default="false"/>-->
 
-    <xacro:include filename="$(find copernicus_sim)/urdf/copernicus_sim_control.urdf.xacro"/>
+
+    <xacro:include filename="$(find copernicus_sim)/urdf/gazebo_control.xacro"/>
     <xacro:include filename="$(find copernicus_sim)/urdf/components/sensors.urdf.xacro"/>
       
     <xacro:macro name="copernicus_robot">

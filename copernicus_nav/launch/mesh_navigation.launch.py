@@ -16,16 +16,18 @@ def generate_launch_description():
     pkg_share = get_package_share_directory(pkg_name)
 
     
-    sim_pkg = "copernicus_sim"
+    sim_pkg = "copernicus_sim_clean"
     sim_pkg_share = get_package_share_directory(sim_pkg)
 
+    map_pkg = "mesh_nav_maps"
+    map_pkg_share = get_package_share_directory(map_pkg)
     #Extension of the mesh map files
     mesh_map_nav_ext = ".ply"
 
     # Get thhe Available maps
     available_map_names = [
         f[:-len(mesh_map_nav_ext)]
-        for f in os.listdir(os.path.join(sim_pkg_share, "maps"))
+        for f in os.listdir(os.path.join(map_pkg_share, "maps"))
         if f.endswith(mesh_map_nav_ext)
     ]
 
@@ -35,6 +37,7 @@ def generate_launch_description():
     #world_name = LaunchConfiguration("world_name")
     localization_type = LaunchConfiguration("localization_type")
     use_rviz = LaunchConfiguration("use_rviz")
+    sim_type = LaunchConfiguration("sim_type")
 
     # Launch the simulation of the robot in Gazebo
     simulation_launch = IncludeLaunchDescription(
@@ -42,9 +45,11 @@ def generate_launch_description():
             [PathJoinSubstitution([sim_pkg_share, "launch", "robot_sim.launch.py"])]
         ),
         launch_arguments={
-            "world_file": PythonExpression(['"', map_name, ".sdf", '"']),
+            "world": map_name,
             "use_rviz": "false",
             "use_sim_time": "true",
+            "sim_type": sim_type,
+
         }.items(),
 
     )
@@ -57,7 +62,7 @@ def generate_launch_description():
         output="screen",
         parameters=[
             {'use_sim_time': True},
-            PathJoinSubstitution([pkg_share, "config", "ekf.yaml"])],
+            PathJoinSubstitution([sim_pkg_share, "config", "ekf.yaml"])],
     )
     
     #Ground truth map localization
@@ -83,7 +88,7 @@ def generate_launch_description():
                 "use_sim_time": True,
                 "map_file": PathJoinSubstitution(
                     [
-                        sim_pkg_share,
+                        map_pkg_share,
                         "maps",
                         PythonExpression(["'", map_name, ".dae'"])
                     ]
@@ -93,7 +98,7 @@ def generate_launch_description():
         ],
     )
 
-    pc2_topic = LaunchConfiguration("pc2_topic", default="/velodyne/velodyne_points")
+    pc2_topic = LaunchConfiguration("pc2_topic", default="/copernics/velodyne/cloud")
     pc2_to_o1dn = Node(
         package="rmcl_ros",
         name="pc2_to_o1dn",
@@ -124,7 +129,7 @@ def generate_launch_description():
         launch_arguments={
             "mesh_map_path": PathJoinSubstitution(
                 [
-                    sim_pkg_share,
+                    map_pkg_share,
                     "maps",
                     PythonExpression(['"', map_name, mesh_map_nav_ext, '"']),
 
@@ -132,7 +137,7 @@ def generate_launch_description():
             ),
             "mesh_map_working_path": PathJoinSubstitution(
                 [
-                    sim_pkg_share,
+                    map_pkg_share,
                     "maps",
                     PythonExpression(['"', map_name, ".h5", '"']),
                 ]
@@ -166,13 +171,18 @@ def generate_launch_description():
                 default_value="true",
                 description="Use rviz if true",
             ),
+            DeclareLaunchArgument(
+                "sim_type",
+                default_value="gz_sim",
+                description="Simulator to use gz_sim or gazebo"
+            ),
             rviz,
             simulation_launch,
-            #ekf,
+            ekf,
             #map_tf,
-            map_loc_rmcl_micp,
-            pc2_to_o1dn,
-            move_base_flex,
+            #map_loc_rmcl_micp,
+            #pc2_to_o1dn,
+            #move_base_flex,
             
         ]
     )

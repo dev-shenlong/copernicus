@@ -2,7 +2,7 @@ move_base_flex:
   ros__parameters:
     global_frame: 'map'
     robot_frame: 'base_link'
-    odom_topic: 'odom'
+    odom_topic: '/copernicus/odom'
 
     use_sim_time: true
     force_stop_at_goal: true
@@ -39,8 +39,12 @@ move_base_flex:
 
       # half-edge-mesh implementation
       hem: pmp # pmp (default), lvr
+#border
+#freespace
+#heihgt_diff
+#roughness
 
-      layers: ['height_diff', 'roughness','inflation']
+      layers: ['border', 'inflation']
 
       height_diff:
         type: 'mesh_layers/HeightDiffLayer'
@@ -53,21 +57,13 @@ move_base_flex:
         border_cost: 1.0
         threshold: 0.9
 
-      roughness:
-        type: 'mesh_layers/RoughnessLayer'
-        factor: 1.0
-        threshold: 0.6
+
 
       inflation:
         type: 'mesh_layers/InflationLayer'
         factor: 1.0
         inflation_radius: 0.25
         inscribed_radius: 0.15
-        lethal_value: 1.0
+        lethal_value: 0.8
         inscribed_value: 0.4
         repulsive_field: false
-      
-      steepness:
-        type: 'mesh_layers/SteepnessLayer'
-        factor: 1.0
-        threshold: 0.8

@@ -103,34 +103,56 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       </xacro:if>
 
       <gazebo reference="${frame}">
-        <sensor type="ray" name="${frame}">
-          <always_on>true</always_on>
-          <pose>0 0 0 0 0 0</pose>
-          <visualize>false</visualize>
-          <update_rate>${update_rate}</update_rate>
-          <ray>
-            <scan>
-              <horizontal>
-                <samples>${sample_size}</samples>
-                <resolution>1</resolution>
-                <min_angle>${min_angle}</min_angle>
-                <max_angle>${max_angle}</max_angle>
-              </horizontal>
-            </scan>
-            <range>
-              <min>${min_range}</min>
-              <max>${max_range}</max>
-              <resolution>0.01</resolution>
-            </range>
-          </ray>
-          <plugin name="gazebo_ros_laser" filename="libgazebo_ros_laser.so">
-            <topicName>${topic}</topicName>
-            <frameName>${frame}</frameName>
-            <robotNamespace>${robot_namespace}</robotNamespace>
-            <gaussianNoise>0.005</gaussianNoise>
-            <alwaysOn>true</alwaysOn>
-          </plugin>
-        </sensor>
+        <xacro:if value="$(eval sim_type=='gazebo')">
+          <sensor name="laser" type="ray">
+                <pose> 0 0 0 0 0 0 </pose>
+                <visualize>false</visualize>
+                <update_rate>10</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>360</samples>
+                            <min_angle>-3.14</min_angle>
+                            <max_angle>3.14</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.3</min>
+                        <max>12</max>
+                    </range>
+                </ray>
+                <plugin name="laser_controller" filename="libgazebo_ros_ray_sensor.so">
+                    <ros>
+                        <argument>~/out:=scan</argument>
+                    </ros>
+                    <output_type>sensor_msgs/LaserScan</output_type>
+                    <frame_name>${frame}</frame_name>
+                </plugin>
+            </sensor>
+          </xacro:if>
+          <xacro:if value="$(eval sim_type=='gz_sim')">
+          <sensor name="laser" type="gpu_lidar">
+                <pose> 0 0 0 0 0 0 </pose>
+                <visualize>false</visualize>
+                <update_rate>10</update_rate>
+                <lidar>
+                    <scan>
+                        <horizontal>
+                            <samples>360</samples>
+                            <min_angle>-3.14</min_angle>
+                            <max_angle>3.14</max_angle>
+                        </horizontal>
+                    </scan>
+                    <range>
+                        <min>0.3</min>
+                        <max>12</max>
+                    </range>
+                </lidar>
+                <topic>/model/copernicus/scan</topic>
+            </sensor>
+          </xacro:if>
+          
+        
       </gazebo>
   </xacro:macro>
 </robot>

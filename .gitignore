@@ -1,1 +1,4 @@
 .vscode
+mesh_nav_maps/worlds/*
+mesh_nav_maps/maps/*
+mesh_nav_maps/models/*

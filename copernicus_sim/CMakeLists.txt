@@ -7,15 +7,26 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
-ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.dsv.in")
-ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.sh.in")
+find_package(ros_gz_sim REQUIRED)
+find_package(gazebo_ros REQUIRED)
+find_package(gazebo_ros_pkgs REQUIRED)
+find_package(ros_gz_bridge REQUIRED)
+find_package(ros_gz_image REQUIRED)
 
-install(DIRECTORY urdf worlds meshes launch models config maps rviz
-  DESTINATION share/${PROJECT_NAME}
-)
+install( DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME})
+
+install( DIRECTORY meshes
+  DESTINATION share/${PROJECT_NAME})
+
+install( DIRECTORY rviz
+  DESTINATION share/${PROJECT_NAME})
+
+install( DIRECTORY urdf
+  DESTINATION share/${PROJECT_NAME})
+
+install( DIRECTORY config
+  DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -28,5 +39,7 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+
 
 ament_package()

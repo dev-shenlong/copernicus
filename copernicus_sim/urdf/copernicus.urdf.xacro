@@ -35,16 +35,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
     <!-- xacro properties -->
     <xacro:property name="PI" value="3.14159"/>
+    <xacro:property name="M_PI" value="3.14159"/>
 
     <!-- xacro args -->
     <xacro:arg name="robot_namespace" default="/" />
     <xacro:arg name="lidar_enabled" default="false"/>
-    <xacro:arg name="test_lidar_enabled" default="true"/>
-    <xacro:arg name="sick_lms151_enabled" default="true"/>
-    <xacro:arg name="velodyne_enabled" default="true"/>
-    <xacro:arg name="imu_enabled" default="true"/>
-
-
+    <xacro:arg name="test_lidar_enabled" default="false"/>
+    <xacro:arg name="sick_lms151_enabled" default="false"/>
+    <xacro:arg name="velodyne_enabled" default="false"/>
+    <xacro:arg name="imu_enabled" default="false"/>
+ 
     <xacro:include filename="$(find copernicus_sim)/urdf/gazebo_control.xacro"/>
     <xacro:include filename="$(find copernicus_sim)/urdf/components/sensors.urdf.xacro"/>
       

@@ -177,7 +177,7 @@ def generate_launch_description():
                 description="Simulator to use gz_sim or gazebo"
             ),
             rviz,
-            simulation_launch,
+         #   simulation_launch,
             ekf,
             #map_tf,
             #map_loc_rmcl_micp,

@@ -1,32 +1,27 @@
 import os
-
 from ament_index_python.packages import get_package_share_directory
-
-from launch import LaunchDescription
-from launch.substitutions import LaunchConfiguration
-from launch.actions import DeclareLaunchArgument
-from launch_ros.actions import Node
-
 import xacro
-
+from launch import LaunchDescription
+from launch.substitutions import LaunchConfiguration,Command
+from launch.actions import DeclareLaunchArgument, LogInfo
+from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
-
-    # Check if we're told to use sim time
     use_sim_time = LaunchConfiguration('use_sim_time')
     sim_type = LaunchConfiguration('sim_type')
+    pkg_name = 'copernicus_sim'
+    pkg_path = os.path.join(get_package_share_directory(pkg_name))
+    imu_enabled = LaunchConfiguration('imu_enabled')
+    velodyne_enabled = LaunchConfiguration('velodyne_enabled')
 
-    # Process the URDF file
-    pkg_path = os.path.join(get_package_share_directory('copernicus_sim'))
-    # Get the path to the URDF file
-    xacro_file = os.path.join(pkg_path,'urdf','diadem.xacro')
-    robot_description_config = xacro.process_file(xacro_file, mapping={'sim_type': sim_type})
+    xacro_file = os.path.join(pkg_path, 'urdf', 'copernicus.xacro')
     
-    # Create a robot_state_publisher node
-    params = {'robot_description': robot_description_config.toxml(), 'use_sim_time': use_sim_time}
-    node_robot_state_publisher = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
+    robot_description_config = ParameterValue(Command(['xacro ', xacro_file,  ' sim_type:=', sim_type, ' imu_enabled:=', imu_enabled, ' velodyne_enabled:=', velodyne_enabled ]), value_type=str)
+    params = {'robot_description': robot_description_config, 'use_sim_time': use_sim_time}
+    robot_state_publisher = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
         output='screen',
         parameters=[params]
     )
@@ -37,17 +32,34 @@ def generate_launch_description():
         arguments=['0', '0', '0', '0', '0', '0', 'odom', 'base_link'],
         output='screen'
     )
-    # Launch!
-    return LaunchDescription([
+    launch_args  = [
         DeclareLaunchArgument(
             'use_sim_time',
             default_value='true',
-            description='Use simulation (Gazebo) clock if true'),
+            description='Use simulation (Gazebo) clock if true'
+        ),
         DeclareLaunchArgument(
             'sim_type',
-            default_value='gazebo',
-            description='Use "gazebo" for Gazebo simulation, "gz_sim" for gz_sim simulation'),
+            default_value='gz_sim',
+            description='Choose simulator to use'
+        ),
+        DeclareLaunchArgument(
+            'imu_enabled',
+            default_value='true',
+            description="Enable/Disable IMU"
+        ),
+        DeclareLaunchArgument(
+            'velodyne_enabled',
+            default_value='true',
+            description="Enable/Disable Velodyne"
+        )
 
-        node_robot_state_publisher,
-        odom_tf
+
+    ]
+
+    return LaunchDescription([
+        *launch_args,
+        robot_state_publisher,
+        odom_tf,
+        
     ])
